@@ -10,6 +10,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <div>Hello world!</div>,
   },
+  {
+    path: "/h2",
+    element: <div>h2!</div>,
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
