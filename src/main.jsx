@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import Main from './routes/index/main';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -8,11 +9,31 @@ import {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello world!</div>,
+    element: <Main />,
   },
   {
-    path: "/h2",
-    element: <div>h2!</div>,
+    path: "/revelacion",
+    element: <div>revelation</div>,
+  },
+  {
+    path: "/nombres",
+    element: <div>names!</div>,
+  },
+  {
+    path: "/bebe",
+    element: <div>baby Activity!</div>,
+  },
+  {
+    path: "/descubrelo",
+    element: <div>name Activity!</div>,
+  },
+  {
+    path: "/configuracion",
+    element: <div>configuracion Activity!</div>,
+  },
+  {
+    path: "/votacion",
+    element: <div>votacion Activity!</div>,
   },
 ]);
 
