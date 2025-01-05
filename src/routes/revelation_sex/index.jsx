@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import RevealButton from './components/RevealButton';
 import { RevealResult } from './components/RevealResult';
+import { CorrectVoters } from './components/CorrectVoters';
 import { useConfetti } from '../../shared/hooks/useConfetti';
-import { getRevelacionData } from '../../shared/services/revelacionService';
+import { getRevelacionData, getCorrectVoters } from '../../shared/services/revelacionService';
 
 export default function RevelationSex() {
    const [revealed, setRevealed] = useState(false);
@@ -12,6 +13,7 @@ export default function RevelationSex() {
    const [error, setError] = useState(null);
    const [gender, setGender] = useState('none');
    const [content, setContent] = useState(null);
+   const [correctVoters, setCorrectVoters] = useState([]);
    const { launchConfetti } = useConfetti();
 
    useEffect(() => {
@@ -28,6 +30,11 @@ export default function RevelationSex() {
             console.log('Género cargado:', data.gender);
             setGender(data.gender);
             setContent(data.content);
+            
+            if (data.gender !== 'none') {
+               const voters = await getCorrectVoters(data.gender);
+               setCorrectVoters(voters);
+            }
          } else {
             console.log('No se encontró género, usando none');
             setGender('none');
@@ -41,13 +48,21 @@ export default function RevelationSex() {
       }
    };
 
-   const handleReveal = () => {
+   const handleReveal = async () => {
       if (gender === 'none') return;
       
       setIsAnimating(true);
-      setTimeout(() => {
+      setTimeout(async () => {
          setRevealed(true);
          launchConfetti(gender);
+         
+         // Cargar los votantes correctos después de revelar
+         try {
+            const voters = await getCorrectVoters(gender);
+            setCorrectVoters(voters);
+         } catch (error) {
+            console.error('Error al cargar votantes:', error);
+         }
       }, 500);
    };
 
@@ -101,7 +116,10 @@ export default function RevelationSex() {
                      gender={gender}
                   />
                ) : (
-                  <RevealResult gender={gender} content={content} />
+                  <>
+                     <RevealResult gender={gender} content={content} />
+                     <CorrectVoters voters={correctVoters} />
+                  </>
                )}
             </div>
          </div>

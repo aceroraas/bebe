@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 
 const CONFIG_COLLECTION = 'configuracion';
@@ -100,5 +100,35 @@ export async function updateRevelacion(gender) {
    } catch (err) {
       console.error('Error al actualizar revelación:', err);
       throw err;
+   }
+};
+
+/**
+ * Obtiene los usuarios que votaron correctamente
+ * @param {string} revealedGender - Género revelado
+ * @returns {Promise<Array<{id: string, displayName: string, photoURL: string}>>} 
+ */
+export async function getCorrectVoters(revealedGender) {
+   try {
+      const usersRef = collection(db, 'users');
+      const querySnapshot = await getDocs(usersRef);
+      const correctVoters = [];
+
+      querySnapshot.forEach((doc) => {
+         const userData = doc.data();
+         if (userData.vote === 'niño' && revealedGender === 'boy' ||
+             userData.vote === 'niña' && revealedGender === 'girl') {
+            correctVoters.push({
+               id: doc.id,
+               displayName: userData.displayName,
+               photoURL: userData.photoURL
+            });
+         }
+      });
+
+      return correctVoters;
+   } catch (error) {
+      console.error('Error getting correct voters:', error);
+      throw error;
    }
 };
