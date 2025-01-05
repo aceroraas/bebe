@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ChatIcon from "./chatIcon";
 import CogIcon from "./cogIcon";
 import CursorIcon from "./cursorIcon";
@@ -45,24 +45,24 @@ export default function NavigatorFixed() {
             <div tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow-lg">
                <div className="grid grid-cols-2 grid-rows-3 gap-2 items-center justify-center p-3">
                   <div className="tooltip" data-tip="Revelación de sexo">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/revelacion">
                         <SparklesIcon />
-                     </button>
+                     </Link>
                   </div>
                   <div className="tooltip" data-tip="Configuración">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/configuracion">
                         <CogIcon />
-                     </button>
+                     </Link>
                   </div>
                   <div className="tooltip" data-tip="Actividades del bebe">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/bebe">
                         <ChatIcon />
-                     </button>
+                     </Link>
                   </div>
                   <div className="tooltip" data-tip="Votación">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/votacion">
                         <CursorIcon />
-                     </button>
+                     </Link>
                   </div>
                   <div className="tooltip" data-tip="Nombres para el bebe">
                      <button className="btn rounded-xl">
