@@ -38,7 +38,7 @@ function CountDownRevealButton({ onReveal, isAnimating }) {
          days = Math.min(99, totalDays % 7);
       }
    }
-
+   diffTime = 0;// borrar esto
    if (diffTime > 0) {
       return (
          <div className="flex flex-col items-center gap-2 italic text-black text-sm md:text-xl">

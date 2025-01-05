@@ -8,7 +8,6 @@ export default function RevelationSex() {
    const [revealed, setRevealed] = useState(false);
    const [isAnimating, setIsAnimating] = useState(false);
    const { launchConfetti } = useConfetti();
-
    const handleReveal = () => {
       setIsAnimating(true);
       setTimeout(() => {

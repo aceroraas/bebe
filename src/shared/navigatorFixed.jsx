@@ -7,7 +7,7 @@ import EditIcon from "./editIcon";
 import ItalicIcon from "./italicIcon";
 import QuadroIcon from "./quadroIcon";
 import SparklesIcon from "./sparklesIcon";
-import { getConfig, useConfigData } from "./services/getConfig";
+import { useConfigData } from "./services/getConfig";
 
 export default function NavigatorFixed() {
    const location = useLocation();
