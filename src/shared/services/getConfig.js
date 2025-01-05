@@ -46,25 +46,25 @@ export function useConfigData() {
          try {
             const data = await getConfig();
             if (!isMounted) return;
-            
+
             const cacheData = {
                data,
                timestamp: Date.now()
             };
-            
+
             try {
                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
             } catch (err) {
                console.error('Error saving to cache:', err);
             }
-            
+
             setConfig(data);
             setError(null);
          } catch (err) {
             if (!isMounted) return;
             console.error('Error fetching config:', err);
             setError(err);
-            
+
             // Si hay error al obtener datos nuevos, intentamos usar la caché expirada como fallback
             const { data } = getCachedConfig();
             if (data) {
@@ -79,7 +79,7 @@ export function useConfigData() {
 
       const init = async () => {
          const { data, isValid } = getCachedConfig();
-         
+
          if (isValid) {
             setConfig(data);
             setLoading(false);
