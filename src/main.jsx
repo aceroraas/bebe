@@ -5,15 +5,19 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import RevelationSex from './routes/revelation_sex';
+import Config from './routes/config';
+import Vote from './routes/vote/Vote';
+import NavigatorFixed from './shared/navigatorFixed';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main />,
+    element: <> <NavigatorFixed /> <Main /></>,
   },
   {
     path: "/revelacion",
-    element: <div>revelation</div>,
+    element: <> <NavigatorFixed />  <RevelationSex /></>,
   },
   {
     path: "/nombres",
@@ -29,11 +33,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/configuracion",
-    element: <div>configuracion Activity!</div>,
+    element: <> <NavigatorFixed /> <Config /></>,
   },
   {
     path: "/votacion",
-    element: <div>votacion Activity!</div>,
+    element: <> <NavigatorFixed /> <Vote /></>,
   },
 ]);
 

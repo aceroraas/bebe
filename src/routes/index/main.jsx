@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
-import NavigatorFixed from "../../shared/navigatorFixed";
-import { getConfig, useConfigData } from "../../shared/services/getConfig";
+import { useConfigData } from "../../shared/services/getConfig";
 // Importa aquí tus componentes que podrían ser renderizados
 
 // ... otros componentes
 
 export default function Main() {
-   return <><NavigatorFixed /><SelectedComponent /></>
+   return <><SelectedComponent /></>
 }
 
 
@@ -20,12 +18,10 @@ function SelectedComponent() {
       let componente = mainPage.componente ?? false
       if (componente) {
          switch (componente) {
-            case 'ComponenteA':
-               return <h1>Componente A</h1>;
-               break;
-            case 'ComponenteB':
-               return <h1>Componente B</h1>;
-               break;
+            case 'revelacion':
+               return <RevelationSex />;
+            case 'votacion':
+               return <Vote />;
             default:
                return <h1>React Router main page</h1>;
          }

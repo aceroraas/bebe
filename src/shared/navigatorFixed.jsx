@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ChatIcon from "./chatIcon";
 import CogIcon from "./cogIcon";
 import CursorIcon from "./cursorIcon";
@@ -9,16 +10,31 @@ import SparklesIcon from "./sparklesIcon";
 import { getConfig, useConfigData } from "./services/getConfig";
 
 export default function NavigatorFixed() {
+   const location = useLocation();
+   const navigate = useNavigate();
+   const isHome = location.pathname === '/';
+
    return <div className="navbar bg-gradient-to-r from-error to-sky-400 shadow-lg ">
       <div className="navbar-start ">
-         <FamilyLastName />
+         {isHome ? (
+            <FamilyLastName />
+         ) : (
+            <button onClick={() => navigate('/')} className="btn btn-ghost text-white">
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+               </svg>
+               Inicio
+            </button>
+         )}
       </div>
-      <div className="navbar-center">
-         <div className="flex flex-col items-center">
-            <CountdownBirth />
-            <TimeOfPregnant />
+      {isHome && (
+         <div className="navbar-center">
+            <div className="flex flex-col items-center">
+               <CountdownBirth />
+               <TimeOfPregnant />
+            </div>
          </div>
-      </div>
+      )}
       <div className="navbar-end">
          <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle text-white shadow-lg">
