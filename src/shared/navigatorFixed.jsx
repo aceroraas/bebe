@@ -65,14 +65,14 @@ export default function NavigatorFixed() {
                      </Link>
                   </div>
                   <div className="tooltip" data-tip="Nombres para el bebe">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/nombres">
                         <EditIcon />
-                     </button>
+                     </Link>
                   </div>
                   <div className="tooltip" data-tip="Descubre el Nombre">
-                     <button className="btn rounded-xl">
+                     <Link className="btn rounded-xl" to="/descubrelo">
                         <ItalicIcon />
-                     </button>
+                     </Link>
                   </div>
                </div>
             </div>

@@ -8,6 +8,7 @@ import { TeamList } from './components/TeamList';
 import { useConfig } from '../../shared/services/getConfig';
 import { isRevelationDay } from '../../shared/utils/dateUtils';
 import { LoginPrompt } from './components/LoginPrompt';
+import { CallToAction } from '../../shared/components/CallToAction';
 
 export default function Vote() {
   const { currentUser, signInWithGoogle } = useAuth();
@@ -81,6 +82,20 @@ export default function Vote() {
           boyVotes={voterProfiles.boy.length}
         />
 
+        {/* Call to Action para Nombres cuando ya ha votado */}
+        {hasVoted && (
+          <div className="mb-8">
+            <CallToAction
+              title="¡Ahora ponle nombre!"
+              description="Ya elegiste tu team, ¿qué nombre crees que le quedaría mejor al bebé?"
+              buttonText="Sugerir Nombres"
+              route="/nombres"
+              icon="👶"
+              theme="secondary"
+            />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Team Niña */}
           <TeamList
@@ -121,6 +136,7 @@ export default function Vote() {
             teamColor="blue"
           />
         </div>
+
       </div>
     </div>
   );
