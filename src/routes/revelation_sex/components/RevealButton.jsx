@@ -1,8 +1,8 @@
 import React from 'react';
-import { useConfigData } from '../../../shared/services/getConfig';
+import { useConfig } from '../../../shared/services/getConfig';
 
 export default function RevealButton({ onReveal, isAnimating, isEnabled, gender }) {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    if (!config || !Array.isArray(config)) return null;
 
    const metadata = config.find(conf => conf.item === 'metadata')?.data;
@@ -112,7 +112,7 @@ export default function RevealButton({ onReveal, isAnimating, isEnabled, gender 
 }
 
 export function CountDownRevealButton({ onReveal, isAnimating, isEnabled }) {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    if (!config || !Array.isArray(config)) return null;
 
    const metadata = config.find(conf => conf.item === 'metadata')?.data;

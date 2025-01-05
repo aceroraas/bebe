@@ -7,7 +7,7 @@ import EditIcon from "./editIcon";
 import ItalicIcon from "./italicIcon";
 import QuadroIcon from "./quadroIcon";
 import SparklesIcon from "./sparklesIcon";
-import { useConfigData } from "./services/getConfig";
+import { useConfig } from "./services/getConfig";
 
 export default function NavigatorFixed() {
    const location = useLocation();
@@ -84,7 +84,7 @@ export default function NavigatorFixed() {
 
 
 function CountdownBirth() {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    const metadata = config?.find(conf => conf.item === 'metadata')?.data;
 
    if (loading) return <div className="italic text-white text-sm md:text-xl">Cargando...</div>;
@@ -130,7 +130,7 @@ function CountdownBirth() {
 
 
 function TimeOfPregnant() {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    const metadata = config?.find(conf => conf.item === 'metadata')?.data;
 
    if (loading) return <div className="italic text-white text-sm md:text-xl">Cargando...</div>;
@@ -158,7 +158,7 @@ function TimeOfPregnant() {
 }
 
 function FamilyLastName() {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    if (loading) return <div className="text-white text-sm md:text-white  md:badge md:badge-lg md:badge-outline  md:text-xl">Cargando...</div>;
    if (error) return <div className="text-white text-sm md:text-white  md:badge md:badge-lg md:badge-outline  md:text-xl">----</div>;
    const metadata = config?.find(conf => conf.item === 'metadata')?.data;

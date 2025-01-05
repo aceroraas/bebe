@@ -1,4 +1,4 @@
-import { useConfigData } from "../../shared/services/getConfig";
+import { useConfig } from "../../shared/services/getConfig";
 // Importa aquí tus componentes que podrían ser renderizados
 
 // ... otros componentes
@@ -9,7 +9,7 @@ export default function Main() {
 
 
 function SelectedComponent() {
-   const { config, loading, error } = useConfigData();
+   const { config, loading, error } = useConfig();
    if (loading) return <div>Cargando...</div>;
    if (error) return <div>Error: {error.message}</div>;
    const mainPage = config?.find(conf => conf.item === 'mainPage')?.data;

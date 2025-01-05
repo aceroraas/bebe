@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getNavigableRoutes } from '../../shared/services/routesConfig';
+import { NextStepCard } from '../../shared/components/NextStepCard';
 
 const routes = getNavigableRoutes();
 
@@ -16,7 +17,8 @@ export default function Main() {
 
    return (
       <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 p-4">
-         <div className="max-w-4xl mx-auto">
+         <div className="max-w-4xl mx-auto space-y-6">
+            {/* Card Principal */}
             <div className="card bg-base-100 shadow-xl">
                <div className="card-body">
                   <h2 className="card-title text-3xl mb-8">Bienvenido a Baby App</h2>
@@ -45,6 +47,9 @@ export default function Main() {
                   </div>
                </div>
             </div>
+
+            {/* Llamado a la Acción */}
+            <NextStepCard />
          </div>
       </div>
    );

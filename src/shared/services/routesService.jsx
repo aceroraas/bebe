@@ -3,7 +3,7 @@ import NavigatorFixed from '../navigatorFixed';
 import Main from '../../routes/main';
 import RevelationSex from '../../routes/revelation_sex';
 import Config from '../../routes/config';
-import Vote from '../../routes/vote/Vote';
+import Vote from '../../routes/votacion';
 import { ROUTES } from './routesConfig';
 
 // Componente contenedor que agrega el NavigatorFixed

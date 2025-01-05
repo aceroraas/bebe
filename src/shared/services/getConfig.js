@@ -1,102 +1,110 @@
 import { collection, getDocs } from "firebase/firestore";
-import { db } from '../../../firebaseConfig';
-
-export async function getConfig() {
-   // obtener los documentos de la colección con nombres de cada documento
-   const configRef = collection(db, 'configuracion');
-   const querySnapshot = await getDocs(configRef);
-   if (querySnapshot.empty) {
-      return [];
-   }
-   const configuraciones = await querySnapshot.docs.map((doc) => { return { item: doc.id, data: doc.data() } });
-   return configuraciones;
-}
-
-// Custom hook simple
+import { db } from '../services/firebaseConfig';
 import { useState, useEffect } from 'react';
 
-const CACHE_KEY = 'app_config';
-const CACHE_EXPIRATION = 1000 * 60 * 60 * 24; // 24 horas en milisegundos
+// Singleton para mantener una única instancia de los datos
+let configInstance = null;
+let lastFetch = 0;
+const REFRESH_INTERVAL = 60000; // 1 minuto
+let activeSubscribers = 0;
+let refreshTimeout = null;
 
-export function useConfigData() {
-   const [config, setConfig] = useState(null);
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState(null);
+/**
+ * Obtiene la configuración de Firestore
+ * @returns {Promise<Array>} Lista de configuraciones
+ */
+async function fetchConfig() {
+  try {
+    const configRef = collection(db, 'configuracion');
+    const querySnapshot = await getDocs(configRef);
+    
+    if (querySnapshot.empty) {
+      return [];
+    }
 
-   useEffect(() => {
-      let isMounted = true;
+    return querySnapshot.docs.map((doc) => ({ 
+      item: doc.id, 
+      data: doc.data() 
+    }));
+  } catch (error) {
+    console.error('Error fetching config:', error);
+    throw error;
+  }
+}
 
-      const getCachedConfig = () => {
-         try {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-               const { data, timestamp } = JSON.parse(cached);
-               const now = Date.now();
-               if (now - timestamp < CACHE_EXPIRATION) {
-                  return { data, isValid: true };
-               }
-            }
-         } catch (err) {
-            console.error('Error reading cache:', err);
-         }
-         return { data: null, isValid: false };
-      };
+/**
+ * Refresca los datos si es necesario
+ * @returns {Promise<Array>} Datos actualizados
+ */
+async function refreshIfNeeded() {
+  const now = Date.now();
+  
+  // Si no hay datos o ha pasado el intervalo de refresco
+  if (!configInstance || (now - lastFetch) > REFRESH_INTERVAL) {
+    configInstance = await fetchConfig();
+    lastFetch = now;
+  }
+  
+  return configInstance;
+}
 
-      const fetchAndCacheConfig = async () => {
-         try {
-            const data = await getConfig();
-            if (!isMounted) return;
+/**
+ * Hook para usar la configuración con refresco automático
+ * @returns {{ config: Array, loading: boolean, error: Error|null }}
+ */
+export function useConfig() {
+  const [config, setConfig] = useState(configInstance);
+  const [loading, setLoading] = useState(!configInstance);
+  const [error, setError] = useState(null);
 
-            const cacheData = {
-               data,
-               timestamp: Date.now()
-            };
+  useEffect(() => {
+    activeSubscribers++;
+    let mounted = true;
 
-            try {
-               localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-            } catch (err) {
-               console.error('Error saving to cache:', err);
-            }
+    const updateConfig = async () => {
+      if (!mounted) return;
+      
+      try {
+        setLoading(true);
+        const data = await refreshIfNeeded();
+        if (mounted) {
+          setConfig(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
 
-            setConfig(data);
-            setError(null);
-         } catch (err) {
-            if (!isMounted) return;
-            console.error('Error fetching config:', err);
-            setError(err);
+    // Primera carga
+    updateConfig();
 
-            // Si hay error al obtener datos nuevos, intentamos usar la caché expirada como fallback
-            const { data } = getCachedConfig();
-            if (data) {
-               setConfig(data);
-            }
-         } finally {
-            if (isMounted) {
-               setLoading(false);
-            }
-         }
-      };
+    // Configurar refresco periódico
+    if (!refreshTimeout) {
+      refreshTimeout = setInterval(() => {
+        if (activeSubscribers > 0) {
+          updateConfig();
+        }
+      }, REFRESH_INTERVAL);
+    }
 
-      const init = async () => {
-         const { data, isValid } = getCachedConfig();
+    return () => {
+      mounted = false;
+      activeSubscribers--;
+      
+      // Limpiar intervalo si no hay más suscriptores
+      if (activeSubscribers === 0 && refreshTimeout) {
+        clearInterval(refreshTimeout);
+        refreshTimeout = null;
+      }
+    };
+  }, []);
 
-         if (isValid) {
-            setConfig(data);
-            setLoading(false);
-            // Fetch en segundo plano para mantener datos frescos
-            fetchAndCacheConfig();
-         } else {
-            // Si no hay caché válida, fetch inmediato
-            fetchAndCacheConfig();
-         }
-      };
-
-      init();
-
-      return () => {
-         isMounted = false;
-      };
-   }, []);
-
-   return { config, loading, error };
+  return { config, loading, error };
 }
