@@ -12,7 +12,6 @@ const CHAT_COLLECTION = 'baby_chat';
  */
 export const sendMessage = async (sender, message, userId) => {
    try {
-      console.log('Sending message:', { sender, message, userId });
       const chatCollection = collection(db, CHAT_COLLECTION);
       
       const messageData = {
@@ -22,16 +21,9 @@ export const sendMessage = async (sender, message, userId) => {
          timestamp: serverTimestamp(),
       };
       
-      console.log('Message data:', messageData);
       const docRef = await addDoc(chatCollection, messageData);
-      console.log('Message sent successfully:', docRef.id);
       return docRef.id;
    } catch (error) {
-      console.error('Error sending message:', error);
-      console.error('Error details:', {
-         code: error.code,
-         message: error.message
-      });
       throw error;
    }
 };
@@ -54,10 +46,9 @@ export const subscribeToChat = (callback) => {
          }));
          callback(messages);
       }, (error) => {
-         console.error('Error in chat subscription:', error);
+         return () => {}; // Return empty cleanup function
       });
    } catch (error) {
-      console.error('Error setting up chat subscription:', error);
       return () => {}; // Return empty cleanup function
    }
 };

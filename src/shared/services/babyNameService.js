@@ -55,8 +55,25 @@ export const guessLetter = async (letter, nameType, userId, position) => {
       throw new Error('No se encontró la información del bebé');
     }
 
+    // Obtener el género revelado
+    const revelacionDoc = await getDoc(doc(db, 'configuracion', 'revelacion'));
+    if (!revelacionDoc.exists()) {
+      throw new Error('No se ha revelado el género aún');
+    }
+
+    const gender = revelacionDoc.data().gender;
+    if (!gender || gender === 'none') {
+      throw new Error('No se ha revelado el género aún');
+    }
+
+    // Obtener el nombre correcto según el género
     const babyInfo = babyInfoDoc.data();
-    const name = babyInfo.sex.male || babyInfo.sex.female;
+    const name = gender === 'boy' ? babyInfo.sex.male : babyInfo.sex.female;
+    
+    if (!name) {
+      throw new Error('No se encontró el nombre para el género revelado');
+    }
+
     const targetName = nameType === 'first_name' ? name.first_name : name.second_name;
 
     // Verificar si la letra coincide en la posición
@@ -96,7 +113,6 @@ export const guessLetter = async (letter, nameType, userId, position) => {
     }
     return false;
   } catch (error) {
-    console.error('Error guessing letter:', error);
     throw error;
   }
 };

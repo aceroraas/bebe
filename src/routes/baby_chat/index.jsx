@@ -11,10 +11,6 @@ export default function BabyChat() {
    const { roles, loading: rolesLoading } = useUserRoles(user?.uid);
    const messagesEndRef = useRef(null);
 
-   // Debug logs
-   console.log('Current user:', user?.email);
-   console.log('User roles:', roles);
-
    const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
    };
@@ -37,14 +33,11 @@ export default function BabyChat() {
       try {
          await sendMessage(sender, message, user.uid);
       } catch (error) {
-         console.error('Error al enviar mensaje:', error);
+         // Silently fail
       }
    };
 
-   // Verificar si el usuario es admin usando el role de la colección users
    const isAdmin = roles.includes('admin');
-   console.log('Roles array:', roles);
-   console.log('Is admin?', isAdmin);
 
    if (rolesLoading) {
       return (
@@ -62,7 +55,6 @@ export default function BabyChat() {
             </div>
 
             <div className="flex flex-col h-[600px]">
-               {/* Mensajes */}
                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((message) => (
                      <ChatMessage
@@ -74,7 +66,6 @@ export default function BabyChat() {
                   <div ref={messagesEndRef} />
                </div>
 
-               {/* Input de mensajes (para admins) */}
                {isAdmin ? (
                   <div className="border-t">
                      <ChatInput onSendMessage={handleSendMessage} />
