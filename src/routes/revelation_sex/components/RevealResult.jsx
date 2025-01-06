@@ -1,5 +1,4 @@
 import React from 'react';
-import { useConfig } from '../../../shared/services/getConfig';
 import { GENDER_CONTENT } from '../../../shared/services/revelacionService';
 
 export function RevealResult({ gender, content }) {
