@@ -11,6 +11,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+// Log para debug - lo removeremos después
+console.log('Firebase Config:', {
+  apiKeyExists: !!import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomainExists: !!import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectIdExists: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
+});
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
