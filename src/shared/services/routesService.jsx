@@ -7,6 +7,7 @@ import Vote from '../../routes/votacion';
 import { ROUTES } from './routesConfig';
 import NamesByUsers from '../../routes/names_by_users';
 import Descubrelo from '../../routes/descubrelo';
+import BabyChat from '../../routes/baby_chat';
 
 // Componente contenedor que agrega el NavigatorFixed
 const WithNavigator = ({ children }) => (
@@ -21,7 +22,7 @@ const PAGE_COMPONENTS = {
    '/': <Main />,
    '/revelacion': <RevelationSex />,
    '/nombres': <NamesByUsers />,
-   '/bebe': <div>baby Activity!</div>,
+   '/bebe': <BabyChat />,
    '/descubrelo': <Descubrelo />,
    '/configuracion': <Config />,
    '/votacion': <Vote />,
