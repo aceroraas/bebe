@@ -38,6 +38,13 @@ export default function Descubrelo() {
         return;
       }
 
+      // Verificar si el género ya fue revelado
+      const revelacionData = await getRevelacionData();
+      if (!revelacionData || revelacionData.gender === 'none') {
+        setError('El género aún no ha sido revelado');
+        return;
+      }
+
       const timestamp = metadata.revelationDay.seconds;
       
       // Validar el timestamp
@@ -65,15 +72,8 @@ export default function Descubrelo() {
 
       const revDayStr = formatDate(revDate);
       
-      if (!isRevelationDay(timestamp)) {
+      if (!isRevelationDay(metadata.revelationDay)) {
         setError(`El juego estará disponible el ${revDayStr}`);
-        return;
-      }
-
-      // Verificar si el género ya fue revelado
-      const revelacionData = await getRevelacionData();
-      if (!revelacionData || revelacionData.gender === 'none') {
-        setError('El género aún no ha sido revelado');
         return;
       }
 
@@ -91,6 +91,7 @@ export default function Descubrelo() {
 
       return () => unsubscribe();
     } catch (error) {
+      console.error('Error en loadInitialData:', error);
       setError('Error al cargar los datos. Por favor, recarga la página.');
     } finally {
       setLoading(false);

@@ -73,16 +73,6 @@ export default function Config() {
       return () => unsubscribe();
    }, []);
 
-   const handleGoogleLogin = async () => {
-      try {
-         const provider = new GoogleAuthProvider();
-         await signInWithPopup(auth, provider);
-      } catch (err) {
-         console.error('Error al iniciar sesión con Google:', err);
-         setError('Error al iniciar sesión con Google');
-      }
-   };
-
    const loadConfigData = async () => {
       try {
          const configs = ['metadata', 'baby'];
@@ -91,13 +81,10 @@ export default function Config() {
          for (const configName of configs) {
             const docRef = doc(collection(db, 'configuracion'), configName);
             const docSnap = await getDoc(docRef);
-            if (configName === 'baby') {
-               data[configName] = docSnap.data() || { sex: { male: {}, female: {} } };
-            } else {
-               data[configName] = docSnap.data();
-            }
+            data[configName] = docSnap.data() || (configName === 'baby' ? { sex: { male: {}, female: {} } } : {});
          }
 
+         console.log('Datos cargados:', data);
          setConfigData(data);
       } catch (err) {
          console.error('Error loading config data:', err);
@@ -107,12 +94,35 @@ export default function Config() {
 
    const updateConfig = async (configName, newData) => {
       try {
+         console.log(`Actualizando ${configName}:`, newData);
          const docRef = doc(collection(db, 'configuracion'), configName);
-         await updateDoc(docRef, newData);
+         
+         // Si estamos actualizando metadata, solo actualizamos ese documento
+         if (configName === 'metadata') {
+            await updateDoc(docRef, newData);
+         } else {
+            // Para otros documentos (como baby), mezclamos con los datos existentes
+            const docSnap = await getDoc(docRef);
+            const currentData = docSnap.data() || {};
+            const mergedData = { ...currentData, ...newData };
+            await updateDoc(docRef, mergedData);
+         }
+         
+         // Recargar todos los datos después de la actualización
          await loadConfigData();
       } catch (err) {
          console.error('Error updating config:', err);
          setError('Error al actualizar la configuración');
+      }
+   };
+
+   const handleGoogleLogin = async () => {
+      try {
+         const provider = new GoogleAuthProvider();
+         await signInWithPopup(auth, provider);
+      } catch (err) {
+         console.error('Error al iniciar sesión con Google:', err);
+         setError('Error al iniciar sesión con Google');
       }
    };
 

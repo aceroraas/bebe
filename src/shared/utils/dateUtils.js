@@ -1,45 +1,45 @@
 /**
- * Comprueba si una fecha dada es hoy o posterior
- * @param {number} timestamp - Timestamp en segundos
+ * Comprueba si una fecha es hoy o ya pasó
+ * @param {number|Object} timestamp - Timestamp en segundos o objeto Firestore Timestamp
  * @returns {boolean}
  */
 export function isRevelationDay(timestamp) {
-  if (!timestamp || typeof timestamp !== 'number') {
-    return false;
-  }
+  if (!timestamp) return false;
 
   try {
-    // Validar que el timestamp esté en un rango razonable
-    const minDate = new Date('2024-01-01').getTime() / 1000;
-    const maxDate = new Date('2026-12-31').getTime() / 1000;
+    let seconds;
     
-    if (timestamp < minDate || timestamp > maxDate) {
+    // Manejar diferentes formatos de timestamp
+    if (typeof timestamp === 'object' && timestamp.seconds) {
+      seconds = timestamp.seconds;
+    } else if (typeof timestamp === 'number') {
+      seconds = timestamp;
+    } else {
+      console.log('Formato de timestamp inválido:', timestamp);
       return false;
     }
 
-    // Obtener fecha actual en UTC
+    // Obtener el inicio del día actual en segundos (UTC)
     const now = new Date();
-    const today = new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate()
-    ));
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
     
-    // Convertir el timestamp a fecha UTC
-    const revDate = new Date(timestamp * 1000);
-    const revelationDay = new Date(Date.UTC(
-      revDate.getUTCFullYear(),
-      revDate.getUTCMonth(),
-      revDate.getUTCDate()
-    ));
+    // Obtener el inicio del día de revelación en segundos (UTC)
+    const revDate = new Date(seconds * 1000);
+    const revDayStart = new Date(revDate.getFullYear(), revDate.getMonth(), revDate.getDate()).getTime() / 1000;
+
+    // Para debug
+    console.log('Timestamp actual (segundos):', Math.floor(now.getTime() / 1000));
+    console.log('Timestamp revelación (segundos):', seconds);
+    console.log('Inicio día actual (segundos):', todayStart);
+    console.log('Inicio día revelación (segundos):', revDayStart);
     
-    // Validar que la fecha sea válida
-    if (isNaN(revelationDay.getTime())) {
-      return false;
-    }
+    // Retorna true si la fecha de revelación es hoy o ya pasó
+    const result = revDayStart <= todayStart;
+    console.log('¿Es día de revelación o ya pasó?:', result);
     
-    return today.getTime() >= revelationDay.getTime();
+    return result;
   } catch (error) {
+    console.error('Error checking revelation day:', error);
     return false;
   }
 }

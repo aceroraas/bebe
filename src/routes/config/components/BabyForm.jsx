@@ -1,29 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function BabyForm({ data = {}, onUpdate }) {
    const [editing, setEditing] = useState(false);
    const [formData, setFormData] = useState({
       male: {
-         first_name: data?.sex?.male?.first_name || '',
-         second_name: data?.sex?.male?.second_name || '',
-         meaning: data?.sex?.male?.meaning || '',
-         is: data?.sex?.male?.is || false
+         first_name: '',
+         second_name: '',
+         meaning: ''
       },
       female: {
-         first_name: data?.sex?.female?.first_name || '',
-         second_name: data?.sex?.female?.second_name || '',
-         meaning: data?.sex?.female?.meaning || '',
-         is: data?.sex?.female?.is || false
+         first_name: '',
+         second_name: '',
+         meaning: ''
       }
    });
 
+   // Actualizar formData cuando cambian los datos externos
+   useEffect(() => {
+      if (data?.sex) {
+         setFormData({
+            male: {
+               first_name: data.sex.male?.first_name || '',
+               second_name: data.sex.male?.second_name || '',
+               meaning: data.sex.male?.meaning || ''
+            },
+            female: {
+               first_name: data.sex.female?.first_name || '',
+               second_name: data.sex.female?.second_name || '',
+               meaning: data.sex.female?.meaning || ''
+            }
+         });
+      }
+   }, [data]);
+
    const handleSubmit = () => {
+      // Obtener los valores actuales de 'is' si existen
+      const currentMaleIs = data?.sex?.male?.is;
+      const currentFemaleIs = data?.sex?.female?.is;
+
       const updatedData = {
          sex: {
-            male: { ...formData.male },
-            female: { ...formData.female }
+            male: {
+               first_name: formData.male.first_name,
+               second_name: formData.male.second_name,
+               meaning: formData.male.meaning,
+               ...(currentMaleIs !== undefined && { is: currentMaleIs })
+            },
+            female: {
+               first_name: formData.female.first_name,
+               second_name: formData.female.second_name,
+               meaning: formData.female.meaning,
+               ...(currentFemaleIs !== undefined && { is: currentFemaleIs })
+            }
          }
       };
+
+      console.log('Guardando datos del bebé:', updatedData);
       onUpdate(updatedData);
       setEditing(false);
    };
@@ -90,8 +122,8 @@ export default function BabyForm({ data = {}, onUpdate }) {
          {/* Sección Masculino */}
          <div>
             <h3 className="text-lg font-semibold mb-4">Nombre Masculino</h3>
-            <div className="flex space-x-4">
-               <div className="flex-1">
+            <div className="space-y-4">
+               <div>
                   <label className="label">
                      <span className="label-text">Primer Nombre</span>
                   </label>
@@ -106,7 +138,7 @@ export default function BabyForm({ data = {}, onUpdate }) {
                      })}
                   />
                </div>
-               <div className="flex-1">
+               <div>
                   <label className="label">
                      <span className="label-text">Segundo Nombre</span>
                   </label>
@@ -121,28 +153,28 @@ export default function BabyForm({ data = {}, onUpdate }) {
                      })}
                   />
                </div>
-            </div>
-            <div className="mt-4">
-               <label className="label">
-                  <span className="label-text">Significado</span>
-               </label>
-               <textarea
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Significado del nombre"
-                  value={formData.male.meaning}
-                  onChange={(e) => setFormData({
-                     ...formData,
-                     male: { ...formData.male, meaning: e.target.value }
-                  })}
-               />
+               <div>
+                  <label className="label">
+                     <span className="label-text">Significado</span>
+                  </label>
+                  <textarea
+                     className="textarea textarea-bordered w-full"
+                     placeholder="Significado"
+                     value={formData.male.meaning}
+                     onChange={(e) => setFormData({
+                        ...formData,
+                        male: { ...formData.male, meaning: e.target.value }
+                     })}
+                  />
+               </div>
             </div>
          </div>
 
          {/* Sección Femenino */}
          <div>
             <h3 className="text-lg font-semibold mb-4">Nombre Femenino</h3>
-            <div className="flex space-x-4">
-               <div className="flex-1">
+            <div className="space-y-4">
+               <div>
                   <label className="label">
                      <span className="label-text">Primer Nombre</span>
                   </label>
@@ -157,7 +189,7 @@ export default function BabyForm({ data = {}, onUpdate }) {
                      })}
                   />
                </div>
-               <div className="flex-1">
+               <div>
                   <label className="label">
                      <span className="label-text">Segundo Nombre</span>
                   </label>
@@ -172,20 +204,20 @@ export default function BabyForm({ data = {}, onUpdate }) {
                      })}
                   />
                </div>
-            </div>
-            <div className="mt-4">
-               <label className="label">
-                  <span className="label-text">Significado</span>
-               </label>
-               <textarea
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Significado del nombre"
-                  value={formData.female.meaning}
-                  onChange={(e) => setFormData({
-                     ...formData,
-                     female: { ...formData.female, meaning: e.target.value }
-                  })}
-               />
+               <div>
+                  <label className="label">
+                     <span className="label-text">Significado</span>
+                  </label>
+                  <textarea
+                     className="textarea textarea-bordered w-full"
+                     placeholder="Significado"
+                     value={formData.female.meaning}
+                     onChange={(e) => setFormData({
+                        ...formData,
+                        female: { ...formData.female, meaning: e.target.value }
+                     })}
+                  />
+               </div>
             </div>
          </div>
 

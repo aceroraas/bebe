@@ -1,29 +1,47 @@
 import { useState } from 'react';
 
 export default function MetadataForm({ data, onUpdate }) {
+   // Función para convertir timestamp de Firestore a formato YYYY-MM-DD
+   const timestampToDateString = (timestamp) => {
+      if (!timestamp?.seconds) return '';
+      const date = new Date(timestamp.seconds * 1000);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+   };
+
+   // Función para convertir fecha YYYY-MM-DD a timestamp de Firestore
+   const dateStringToTimestamp = (dateString) => {
+      if (!dateString) return null;
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day, 12, 0, 0); // Usamos mediodía para evitar problemas de zona horaria
+      return {
+         seconds: Math.floor(date.getTime() / 1000),
+         nanoseconds: 0
+      };
+   };
+
    const [formData, setFormData] = useState({
       lastNames: data?.lastNames || '',
-      lastPeriod: data?.lastPeriod ? new Date(data.lastPeriod.seconds * 1000).toISOString().split('T')[0] : '',
-      dayOfBirth: data?.dayOfBirth ? new Date(data.dayOfBirth.seconds * 1000).toISOString().split('T')[0] : '',
-      revelationDay: data?.revelationDay ? new Date(data.revelationDay.seconds * 1000).toISOString().split('T')[0] : ''
+      lastPeriod: timestampToDateString(data?.lastPeriod),
+      dayOfBirth: timestampToDateString(data?.dayOfBirth),
+      revelationDay: timestampToDateString(data?.revelationDay)
    });
 
    const handleSubmit = () => {
       const updatedData = {
          lastNames: formData.lastNames,
-         lastPeriod: {
-            seconds: Math.floor(new Date(formData.lastPeriod).getTime() / 1000),
-            nanoseconds: (new Date(formData.lastPeriod).getTime() % 1000) * 1000000
-         },
-         dayOfBirth: {
-            seconds: Math.floor(new Date(formData.dayOfBirth).getTime() / 1000),
-            nanoseconds: (new Date(formData.dayOfBirth).getTime() % 1000) * 1000000
-         },
-         revelationDay: {
-            seconds: Math.floor(new Date(formData.revelationDay).getTime() / 1000),
-            nanoseconds: (new Date(formData.revelationDay).getTime() % 1000) * 1000000
-         }
+         lastPeriod: dateStringToTimestamp(formData.lastPeriod),
+         dayOfBirth: dateStringToTimestamp(formData.dayOfBirth),
+         revelationDay: dateStringToTimestamp(formData.revelationDay)
       };
+
+      console.log('Guardando datos:', {
+         original: formData,
+         converted: updatedData
+      });
+
       onUpdate(updatedData);
    };
 
@@ -53,7 +71,7 @@ export default function MetadataForm({ data, onUpdate }) {
          </div>
          <div>
             <label className="label">
-               <span className="label-text">Día de Nacimiento</span>
+               <span className="label-text">Fecha Probable de Parto</span>
             </label>
             <input
                type="date"
@@ -64,7 +82,7 @@ export default function MetadataForm({ data, onUpdate }) {
          </div>
          <div>
             <label className="label">
-               <span className="label-text">Día de Revelación</span>
+               <span className="label-text">Día de la Revelación</span>
             </label>
             <input
                type="date"
@@ -73,10 +91,7 @@ export default function MetadataForm({ data, onUpdate }) {
                onChange={(e) => setFormData({ ...formData, revelationDay: e.target.value })}
             />
          </div>
-         <div className="card-actions justify-end mt-4">
-            <button className="btn btn-ghost" onClick={() => onUpdate(data)}>
-               Cancelar
-            </button>
+         <div className="card-actions justify-end">
             <button className="btn btn-primary" onClick={handleSubmit}>
                Guardar
             </button>

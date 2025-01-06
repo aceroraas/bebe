@@ -13,13 +13,13 @@ import { CallToAction } from '../../shared/components/CallToAction';
 export default function Vote() {
   const { currentUser, signInWithGoogle } = useAuth();
   const { launchConfetti } = useConfetti();
-  const { 
-    currentVote, 
-    hasVoted, 
+  const {
+    currentVote,
+    hasVoted,
     voterProfiles,
-    loading: voteLoading, 
-    registerVote, 
-    removeVote 
+    loading: voteLoading,
+    registerVote,
+    removeVote
   } = useVoteSystem(currentUser);
   const { config, loading: configLoading } = useConfig();
 
@@ -39,15 +39,16 @@ export default function Vote() {
   }
 
   const metadata = config?.find(conf => conf.item === 'metadata')?.data;
-  const isRevealDay = metadata?.revelationDate && isRevelationDay(metadata.revelationDate);
+  const isRevealDay = metadata?.revelationDay && isRevelationDay(metadata.revelationDay);
 
   const handleVoteSelect = async (option) => {
     if (!currentUser) return;
+    if (isRevealDay && hasVoted) return;
 
     const voteValue = option === 'girl' ? 'niña' : 'niño';
-    
+
     try {
-      if (currentVote === voteValue) {
+      if (currentVote === voteValue && !isRevealDay) {
         await removeVote();
       } else {
         await registerVote(voteValue);
@@ -76,7 +77,7 @@ export default function Vote() {
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-blue-50 p-4">
       <div className="container mx-auto max-w-6xl">
         <h1 className="text-4xl font-bold text-center mb-8">¡Hora de Elegir!</h1>
-        
+
         <VoteCounter
           girlVotes={voterProfiles.girl.length}
           boyVotes={voterProfiles.boy.length}
@@ -110,13 +111,20 @@ export default function Vote() {
               <TeamSelector
                 selectedOption={currentVote === 'niña' ? 'girl' : currentVote === 'niño' ? 'boy' : null}
                 onVoteSelect={handleVoteSelect}
-                disabled={isRevealDay}
+                disabled={isRevealDay && hasVoted}
               />
-              
-              {isRevealDay && (
+
+              {isRevealDay && hasVoted && (
                 <div className="alert alert-info mt-4">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  <span>¡Hoy es el día de la revelación! Ya no se pueden cambiar los votos.</span>
+                  <span>¡Hoy es el día de la revelación! Ya no puedes cambiar tu voto.</span>
+                </div>
+              )}
+
+              {isRevealDay && !hasVoted && (
+                <div className="alert alert-warning mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                  <span>¡Hoy es el día de la revelación! Esta será tu última oportunidad para votar.</span>
                 </div>
               )}
 
