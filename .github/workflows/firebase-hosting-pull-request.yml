@@ -14,13 +14,22 @@ jobs:
     environment: everimoments
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          
+      - name: Debug Environment Variables
+        run: |
+          echo "Environment name: ${{ env.ENVIRONMENT_NAME }}"
+          echo "Environment URL: ${{ env.ENVIRONMENT_URL }}"
+          echo "Secret exists check:"
+          echo "VITE_FIREBASE_API_KEY exists: ${{ secrets.VITE_FIREBASE_API_KEY != '' }}"
+          
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
+        
       - name: Build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -29,4 +38,7 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: npm run build
+        run: |
+          echo "Building with environment variables..."
+          env | grep VITE_
+          npm run build
