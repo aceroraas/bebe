@@ -51,7 +51,7 @@ export default function Vote() {
         await removeVote();
       } else {
         await registerVote(voteValue);
-        launchConfetti(option);
+        launchConfetti({ type: option });
       }
     } catch (error) {
       console.error('Error al gestionar el voto:', error);

@@ -36,40 +36,36 @@ export const GENDER_CONTENT = {
  * @returns {Promise<{gender: string, content: object}>} 
  */
 export async function getRevelacionData() {
-   try {
-      console.log('Obteniendo datos de revelación...');
-      const docRef = doc(db, CONFIG_COLLECTION, REVELACION_DOC_ID);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-         const data = docSnap.data();
-         console.log('Datos de revelación encontrados:', data);
-         const gender = data.gender || 'none';
-         console.log('Género en el documento:', gender);
-         
-         return {
-            gender,
-            content: GENDER_CONTENT[gender],
-            updatedAt: data.updatedAt
-         };
-      }
-
-      console.log('No se encontró documento de revelación, creando uno nuevo...');
-      // Si no existe el documento, crearlo con valor por defecto
-      await setDoc(docRef, {
-         gender: 'none',
-         updatedAt: new Date().toISOString()
-      });
-
+  const docRef = doc(db, CONFIG_COLLECTION, REVELACION_DOC_ID);
+  
+  try {
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const gender = data?.gender || 'none';
       return {
-         gender: 'none',
-         content: GENDER_CONTENT.none,
-         updatedAt: new Date().toISOString()
+        gender,
+        content: GENDER_CONTENT[gender],
+        updatedAt: data.updatedAt
       };
-   } catch (err) {
-      console.error('Error al obtener datos de revelación:', err);
-      throw err;
-   }
+    } else {
+      // Si no existe el documento, lo creamos con valores por defecto
+      const defaultData = {
+        gender: 'none',
+        updatedAt: new Date().toISOString()
+      };
+      
+      await setDoc(docRef, defaultData);
+      return {
+        gender: 'none',
+        content: GENDER_CONTENT.none,
+        updatedAt: new Date().toISOString()
+      };
+    }
+  } catch (err) {
+    throw err;
+  }
 };
 
 /**
@@ -78,29 +74,26 @@ export async function getRevelacionData() {
  * @returns {Promise<{gender: string, content: object}>} 
  */
 export async function updateRevelacion(gender) {
-   if (!['none', 'boy', 'girl'].includes(gender)) {
-      throw new Error('Valor de género inválido');
-   }
+  if (!['none', 'boy', 'girl'].includes(gender)) {
+    throw new Error('Valor de género inválido');
+  }
 
-   try {
-      console.log('Actualizando género a:', gender);
-      const docRef = doc(db, CONFIG_COLLECTION, REVELACION_DOC_ID);
-      
-      await setDoc(docRef, {
-         gender,
-         updatedAt: new Date().toISOString()
-      }, { merge: true });
+  try {
+    const docRef = doc(db, CONFIG_COLLECTION, REVELACION_DOC_ID);
+    
+    await setDoc(docRef, {
+      gender,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
 
-      console.log('Género actualizado exitosamente');
-      return {
-         gender,
-         content: GENDER_CONTENT[gender],
-         updatedAt: new Date().toISOString()
-      };
-   } catch (err) {
-      console.error('Error al actualizar revelación:', err);
-      throw err;
-   }
+    return {
+      gender,
+      content: GENDER_CONTENT[gender],
+      updatedAt: new Date().toISOString()
+    };
+  } catch (err) {
+    throw err;
+  }
 };
 
 /**
@@ -109,26 +102,25 @@ export async function updateRevelacion(gender) {
  * @returns {Promise<Array<{id: string, displayName: string, photoURL: string}>>} 
  */
 export async function getCorrectVoters(revealedGender) {
-   try {
-      const usersRef = collection(db, 'users');
-      const querySnapshot = await getDocs(usersRef);
-      const correctVoters = [];
+  try {
+    const usersRef = collection(db, 'users');
+    const querySnapshot = await getDocs(usersRef);
+    const correctVoters = [];
 
-      querySnapshot.forEach((doc) => {
-         const userData = doc.data();
-         if (userData.vote === 'niño' && revealedGender === 'boy' ||
-             userData.vote === 'niña' && revealedGender === 'girl') {
-            correctVoters.push({
-               id: doc.id,
-               displayName: userData.displayName,
-               photoURL: userData.photoURL
-            });
-         }
-      });
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data();
+      if (userData.vote === 'niño' && revealedGender === 'boy' ||
+          userData.vote === 'niña' && revealedGender === 'girl') {
+        correctVoters.push({
+          id: doc.id,
+          displayName: userData.displayName,
+          photoURL: userData.photoURL
+        });
+      }
+    });
 
-      return correctVoters;
-   } catch (error) {
-      console.error('Error getting correct voters:', error);
-      throw error;
-   }
+    return correctVoters;
+  } catch (error) {
+    throw error;
+  }
 };

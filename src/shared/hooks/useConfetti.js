@@ -1,13 +1,13 @@
 import confetti from 'canvas-confetti';
 
 export function useConfetti() {
-   const launchConfetti = (type = 'girl') => {
+   const launchConfetti = ({ type = 'girl' } = {}) => {
       const count = 200;
       const defaults = {
          origin: { y: 0.7 },
          colors: type === 'boy' 
-            ? ['#3b82f6', '#60a5fa', '#93c5fd'] // Azules para niño
-            : ['#ec4899', '#f472b6', '#f9a8d4']  // Rosas para niña
+            ? ['#1e40af', '#3b82f6', '#93c5fd', '#dbeafe', '#ffffff'] // Azules y blanco para niño
+            : ['#be185d', '#ec4899', '#f9a8d4', '#fce7f3', '#ffffff']  // Rosas y blanco para niña
       };
 
       function fire(particleRatio, opts) {

@@ -15,22 +15,21 @@ export default function Revelacion() {
    const [success, setSuccess] = useState(false);
 
    useEffect(() => {
+      const loadGender = async () => {
+         try {
+            const data = await getRevelacionData();
+            if (data) {
+               setGender(data.gender || 'none');
+            }
+         } catch (err) {
+            setError('Error al cargar los datos');
+         } finally {
+            setLoading(false);
+         }
+      };
+
       loadGender();
    }, []);
-
-   const loadGender = async () => {
-      try {
-         setLoading(true);
-         const data = await getRevelacionData();
-         console.log('Datos cargados en configuración:', data);
-         setGender(data.gender || 'none');
-      } catch (err) {
-         console.error('Error al cargar el género:', err);
-         setError('Error al cargar la configuración');
-      } finally {
-         setLoading(false);
-      }
-   };
 
    const handleGenderChange = async (newGender) => {
       if (newGender === gender) return;
@@ -45,17 +44,14 @@ export default function Revelacion() {
          setSaving(true);
          setError(null);
          setSuccess(false);
-         console.log('Cambiando género a:', newGender);
          await updateRevelacion(newGender);
          setGender(newGender);
          setSuccess(true);
-         console.log('Género actualizado exitosamente a:', newGender);
 
          // Limpiar el mensaje de éxito después de 3 segundos
          setTimeout(() => setSuccess(false), 3000);
       } catch (err) {
-         console.error('Error al actualizar el género:', err);
-         setError('Error al guardar la configuración');
+         setError('Error al actualizar el género');
       } finally {
          setSaving(false);
       }

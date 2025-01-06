@@ -17,36 +17,41 @@ export default function RevelationSex() {
    const { launchConfetti } = useConfetti();
 
    useEffect(() => {
-      loadGenderData();
+      const loadGender = async () => {
+         try {
+            setLoading(true);
+            const data = await getRevelacionData();
+            if (data && data.gender) {
+               setGender(data.gender);
+               setContent(data.content);
+            } else {
+               setGender('none');
+            }
+            setRevealed(false);
+         } catch (err) {
+            setError('Error al cargar los datos. Por favor, recarga la página.');
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      loadGender();
    }, []);
 
-   const loadGenderData = async () => {
-      try {
-         setLoading(true);
-         const data = await getRevelacionData();
-         console.log('Datos cargados en revelación:', data);
+   useEffect(() => {
+      const loadVoters = async () => {
+         if (gender === 'none') return;
          
-         if (data && data.gender) {
-            console.log('Género cargado:', data.gender);
-            setGender(data.gender);
-            setContent(data.content);
-            
-            if (data.gender !== 'none') {
-               const voters = await getCorrectVoters(data.gender);
-               setCorrectVoters(voters);
-            }
-         } else {
-            console.log('No se encontró género, usando none');
-            setGender('none');
+         try {
+            const voters = await getCorrectVoters(gender);
+            setCorrectVoters(voters);
+         } catch (error) {
+            setError('Error al cargar la lista de votantes');
          }
-         setRevealed(false);
-      } catch (err) {
-         console.error('Error al cargar el género:', err);
-         setError('Error al cargar los datos. Por favor, recarga la página.');
-      } finally {
-         setLoading(false);
-      }
-   };
+      };
+
+      loadVoters();
+   }, [gender]);
 
    const handleReveal = async () => {
       if (gender === 'none') return;
@@ -55,14 +60,6 @@ export default function RevelationSex() {
       setTimeout(async () => {
          setRevealed(true);
          launchConfetti(gender);
-         
-         // Cargar los votantes correctos después de revelar
-         try {
-            const voters = await getCorrectVoters(gender);
-            setCorrectVoters(voters);
-         } catch (error) {
-            console.error('Error al cargar votantes:', error);
-         }
       }, 500);
    };
 
