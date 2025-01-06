@@ -10,7 +10,17 @@ print_step() {
     echo -e "${BLUE}==>${NC} ${GREEN}$1${NC}"
 }
 
-# Verificar que las variables de entorno estén configuradas
+# Cargar variables de entorno desde .env
+print_step "Cargando variables de entorno desde .env..."
+if [ ! -f ".env" ]; then
+    echo "Error: No se encontró el archivo .env"
+    exit 1
+fi
+
+# Exportar todas las variables del archivo .env
+export $(cat .env | grep -v '^#' | xargs)
+
+# Verificar que las variables necesarias estén configuradas
 print_step "Verificando variables de entorno..."
 ENV_VARS=(
     "VITE_FIREBASE_API_KEY"
@@ -23,7 +33,7 @@ ENV_VARS=(
 
 for var in "${ENV_VARS[@]}"; do
     if [ -z "${!var}" ]; then
-        echo "Error: La variable $var no está configurada"
+        echo "Error: La variable $var no está configurada en el archivo .env"
         exit 1
     fi
 done
