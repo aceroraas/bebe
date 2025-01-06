@@ -9,6 +9,7 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: everimoments
     steps:
       - uses: actions/checkout@v4
       
@@ -55,8 +56,9 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           
       - name: Deploy to Firebase
-        run: |
-          echo "Starting Firebase deploy..."
-          firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BEBE_AZ }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BEBE_AZ }}
+          channelId: live
+          projectId: bebe-az
