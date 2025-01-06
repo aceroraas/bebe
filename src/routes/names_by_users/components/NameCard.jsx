@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
 
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name.split(' ')
+    .map(word => word.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
 export const NameCard = ({ user, name, currentUserId, onDelete }) => {
+  const [imageError, setImageError] = useState(false);
+
   // Determinar el color del equipo basado en el voto del usuario
   const getTeamColor = () => {
     if (!user.vote) return 'bg-white hover:bg-gray-50';
@@ -29,6 +40,29 @@ export const NameCard = ({ user, name, currentUserId, onDelete }) => {
 
   const isOwnName = currentUserId === user.id;
   const displayName = capitalizeFirstLetter(name);
+
+  const AvatarImage = () => {
+    if (!user.photoURL || imageError) {
+      return (
+        <div 
+          className={`w-16 h-16 rounded-full ${getAvatarColor()} flex items-center justify-center mb-2 text-white text-lg font-medium border-2 border-white shadow-inner`}
+          title={user.displayName}
+        >
+          {getInitials(user.displayName)}
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={user.photoURL}
+        alt={user.displayName}
+        onError={() => setImageError(true)}
+        className="w-16 h-16 rounded-full mb-2 border-2 border-white object-cover"
+        loading="lazy"
+      />
+    );
+  };
 
   return (
     <div 
@@ -73,17 +107,7 @@ export const NameCard = ({ user, name, currentUserId, onDelete }) => {
       )}
 
       <div className={`tooltip ${getTooltipColor()}`} data-tip={user.displayName || 'Usuario'}>
-        {user.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt={user.displayName}
-            className="w-16 h-16 rounded-full mb-2 border-2 border-white"
-          />
-        ) : (
-          <div className={`w-16 h-16 rounded-full ${getAvatarColor()} flex items-center justify-center mb-2 text-white text-xl border-2 border-white`}>
-            {user.displayName?.charAt(0)?.toUpperCase() || '?'}
-          </div>
-        )}
+        <AvatarImage />
       </div>
       <span className="text-sm font-medium text-center truncate w-full">
         {displayName}

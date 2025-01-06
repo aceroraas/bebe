@@ -7,6 +7,7 @@ import LoginScreen from './components/LoginScreen';
 import ConfigSection from './components/ConfigSection';
 import UserManagement from './components/UserManagement';
 import Revelacion from './components/Revelacion';
+import BabyForm from './components/BabyForm';
 
 export default function Config() {
    const [user, setUser] = useState(null);
@@ -163,6 +164,15 @@ export default function Config() {
                               title="Metadatos"
                               data={configData.metadata}
                               onUpdate={(newData) => updateConfig('metadata', newData)}
+                           />
+                        </div>
+                     </div>
+                     <div className="card bg-base-100 shadow-xl">
+                        <div className="card-body">
+                           <h2 className="card-title">Datos del Bebé</h2>
+                           <BabyForm
+                              data={configData.baby}
+                              onUpdate={(newData) => updateConfig('baby', newData)}
                            />
                         </div>
                      </div>
