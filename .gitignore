@@ -23,4 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 # .gitignore
+*.cache
+.firebase/*
 .env

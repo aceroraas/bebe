@@ -22,20 +22,20 @@ export default function RevelationSex() {
       const loadGender = async () => {
          try {
             setLoading(true);
-            
+
             const metadata = config?.find(conf => conf.item === 'metadata')?.data;
             if (!metadata?.revelationDay?.seconds) {
                setError('Cuenta Regresiva para la Revelación\ndías');
                return;
             }
 
-            const now = new Date('2025-01-06T02:47:59-04:00');
+            const now = new Date();
             const revDate = new Date(metadata.revelationDay.seconds * 1000);
-            
+
             // Resetear las horas para comparar solo fechas
             const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const revDateOnly = new Date(revDate.getFullYear(), revDate.getMonth(), revDate.getDate());
-            
+
             console.log('Now:', nowDate.toISOString());
             console.log('RevDate:', revDateOnly.toISOString());
             console.log('¿Son iguales?:', nowDate.getTime() === revDateOnly.getTime());
@@ -64,7 +64,7 @@ export default function RevelationSex() {
             console.log('DiffDays:', diffDays);
             console.log('Weeks:', weeks);
             console.log('Days:', days);
-            
+
             setError({
                title: 'Cuenta Regresiva para la Revelación',
                weeks,
@@ -87,7 +87,7 @@ export default function RevelationSex() {
    useEffect(() => {
       const loadVoters = async () => {
          if (gender === 'none') return;
-         
+
          try {
             const voters = await getCorrectVoters(gender);
             setCorrectVoters(voters);
@@ -102,7 +102,7 @@ export default function RevelationSex() {
 
    const handleReveal = async () => {
       if (gender === 'none') return;
-      
+
       setIsAnimating(true);
       setTimeout(async () => {
          setRevealed(true);
@@ -172,10 +172,10 @@ export default function RevelationSex() {
    }
 
    const gradientClass = revealed ? (
-      gender === 'boy' 
-         ? 'from-blue-100 to-blue-200' 
-         : gender === 'girl' 
-            ? 'from-pink-100 to-pink-200' 
+      gender === 'boy'
+         ? 'from-blue-100 to-blue-200'
+         : gender === 'girl'
+            ? 'from-pink-100 to-pink-200'
             : 'from-gray-100 to-gray-200'
    ) : 'from-gray-100 to-gray-200';
 
@@ -189,9 +189,9 @@ export default function RevelationSex() {
             <div className="bg-white rounded-2xl shadow-xl p-8 text-center relative overflow-hidden">
                {!revealed ? (
                   showButton ? (
-                     <RevealButton 
-                        onReveal={handleReveal} 
-                        isAnimating={isAnimating} 
+                     <RevealButton
+                        onReveal={handleReveal}
+                        isAnimating={isAnimating}
                         isEnabled={gender !== 'none'}
                         gender={gender}
                      />
