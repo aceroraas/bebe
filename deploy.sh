@@ -54,6 +54,6 @@ fi
 
 # Desplegar a Firebase
 print_step "Desplegando a Firebase..."
-firebase deploy --only hosting
+npx firebase deploy --only hosting
 
 print_step "¡Despliegue completado!"

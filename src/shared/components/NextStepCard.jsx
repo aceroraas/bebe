@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router-dom';
 
 const NEXT_STEPS = {
   VOTE: {
-    title: '¡Elige tu Team!',
-    description: '¿Será niño o niña? ¡Únete a esta emocionante aventura y registra tu predicción!',
-    buttonText: 'Elegir Team',
-    route: '/votacion',
+    title: '¡Ya empezamos!',
+    description: '¿Será niño o niña? ¡Únete a esta emocionante aventura ve la revelacion en tiempo real con nosotros!',
+    buttonText: 'VER EN TIKTOK LIVE!',
+    route: 'https://www.tiktok.com/@aceroraas/live',
+    external: true,
     theme: 'primary',
-    icon: '🎯'
+    icon: '📡'
   }
 };
 
@@ -18,6 +19,13 @@ export const NextStepCard = () => {
   const themeColors = {
     primary: 'from-pink-50 to-blue-50 hover:from-pink-100 hover:to-blue-100'
   };
+  const handleRouteChange = () => {
+    if (stepConfig.external) {
+      window.open(stepConfig.route, '_blank');
+    } else {
+      navigate(stepConfig.route);
+    }
+  }
 
   return (
     <div className={`card shadow-xl transition-all duration-300 bg-gradient-to-r ${themeColors[stepConfig.theme]}`}>
@@ -26,13 +34,13 @@ export const NextStepCard = () => {
           <span className="text-3xl">{stepConfig.icon}</span>
           <h3 className="card-title text-2xl">{stepConfig.title}</h3>
         </div>
-        
+
         <p className="text-gray-600 mb-6">{stepConfig.description}</p>
-        
+
         <div className="card-actions justify-end">
-          <button 
+          <button
             className={`btn btn-lg gap-2 btn-primary`}
-            onClick={() => navigate(stepConfig.route)}
+            onClick={handleRouteChange}
           >
             {stepConfig.buttonText}
             <span className="text-xl">→</span>
