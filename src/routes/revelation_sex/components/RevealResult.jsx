@@ -7,11 +7,11 @@ export function RevealResult({ gender, content }) {
 
    return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-8 animate-fade-in">
-         <div className={`text-6xl ${displayContent.color} animate-bounce`}>
+         <div className={`text-[5rem] ${displayContent.color} animate-bounce`}>
             {displayContent.emoji}
          </div>
 
-         <h1 className={`text-4xl font-bold ${displayContent.color} animate-pulse`}>
+         <h1 className={`text-6xl font-bold ${displayContent.color} animate-pulse`}>
             {displayContent.title}
          </h1>
 

@@ -6,6 +6,7 @@ import { CorrectVoters } from './components/CorrectVoters';
 import { useConfetti } from '../../shared/hooks/useConfetti';
 import { getRevelacionData, getCorrectVoters } from '../../shared/services/revelacionService';
 import { useConfig } from '../../shared/services/getConfig';
+import CountDownTimer from './components/CountDownTimer';
 
 export default function RevelationSex() {
    const [revealed, setRevealed] = useState(false);
@@ -17,6 +18,8 @@ export default function RevelationSex() {
    const [correctVoters, setCorrectVoters] = useState([]);
    const { launchConfetti } = useConfetti();
    const { config, loading: configLoading } = useConfig();
+   const [isFinished, setIsFinished] = useState(false);
+   const [startCountdown, setStartCountdown] = useState(false);
 
    useEffect(() => {
       const loadGender = async () => {
@@ -36,13 +39,9 @@ export default function RevelationSex() {
             const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const revDateOnly = new Date(revDate.getFullYear(), revDate.getMonth(), revDate.getDate());
 
-            console.log('Now:', nowDate.toISOString());
-            console.log('RevDate:', revDateOnly.toISOString());
-            console.log('¿Son iguales?:', nowDate.getTime() === revDateOnly.getTime());
 
             // Si es el mismo día, mostrar el botón
             if (nowDate.getTime() === revDateOnly.getTime()) {
-               console.log('Es el mismo día, mostrando botón');
                const data = await getRevelacionData();
                if (data && data.gender) {
                   setGender(data.gender);
@@ -61,9 +60,6 @@ export default function RevelationSex() {
             const weeks = Math.floor(diffDays / 7);
             const days = diffDays % 7;
 
-            console.log('DiffDays:', diffDays);
-            console.log('Weeks:', weeks);
-            console.log('Days:', days);
 
             setError({
                title: 'Cuenta Regresiva para la Revelación',
@@ -100,15 +96,25 @@ export default function RevelationSex() {
       loadVoters();
    }, [gender]);
 
-   const handleReveal = async () => {
-      if (gender === 'none') return;
-
-      setIsAnimating(true);
-      setTimeout(async () => {
-         setRevealed(true);
-         launchConfetti({ type: gender === 'boy' ? 'boy' : 'girl' });
-      }, 500);
+   const handleRestart = () => {
+      setStartCountdown(true); // Reseteamos primero para reiniciar
+      setIsFinished(false); // Reiniciamos el estado de finalización
    };
+
+   useEffect(() => {
+      console.log({ isFinished });
+
+      if (isFinished) {
+         setIsAnimating(true);
+         setTimeout(async () => {
+            setRevealed(true);
+            launchConfetti({ type: gender === 'boy' ? 'boy' : 'girl' });
+            setTimeout(() => {
+               launchConfetti({ type: gender === 'boy' ? 'boy' : 'girl' });
+            }, 800);
+         }, 200);
+      };
+   }, [isFinished])
 
    if (loading || configLoading) {
       return (
@@ -187,20 +193,20 @@ export default function RevelationSex() {
          <div className="max-w-2xl w-full">
             <Header />
             <div className="bg-white rounded-2xl shadow-xl p-8 text-center relative overflow-hidden">
-               {!revealed ? (
+               {!startCountdown ? (
                   showButton ? (
                      <RevealButton
-                        onReveal={handleReveal}
+                        onReveal={handleRestart}
                         isAnimating={isAnimating}
                         isEnabled={gender !== 'none'}
                         gender={gender}
                      />
                   ) : null
                ) : (
-                  <>
-                     <RevealResult gender={gender} content={content} />
-                     <CorrectVoters voters={correctVoters} />
-                  </>
+                  <CountDownTimer start={startCountdown} setFinished={setIsFinished} >
+                     <RevealResult key={1} gender={gender} content={content} />
+                     <CorrectVoters key={2} voters={correctVoters} />
+                  </CountDownTimer>
                )}
             </div>
          </div>
