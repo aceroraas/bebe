@@ -41,7 +41,8 @@ export default function RevelationSex() {
 
 
             // Si es el mismo día, mostrar el botón
-            if (nowDate.getTime() === revDateOnly.getTime()) {
+            if (nowDate.getTime() >= revDateOnly.getTime()) {
+               console.log('Es el mismo día, mostrando botón');
                const data = await getRevelacionData();
                if (data && data.gender) {
                   setGender(data.gender);
